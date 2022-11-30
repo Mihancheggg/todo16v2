@@ -7,12 +7,11 @@ import FormGroup from '@mui/material/FormGroup';
 import FormLabel from '@mui/material/FormLabel';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import {useFormik} from 'formik';
-import {useDispatch, useSelector} from 'react-redux';
-import {loginTC} from './auth-reducer';
-import {AppRootStateType} from '../../app/store';
-import {TasksStateType} from '../TodolistsList/tasks-reducer';
-import {Navigate} from 'react-router-dom';
+import { useFormik } from 'formik';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginTC } from './auth-reducer';
+import { AppRootStateType } from '../../app/store';
+import { Navigate } from 'react-router-dom';
 
 type FormikErrorType = {
     email?: string,
@@ -36,7 +35,7 @@ export const Login = () => {
             const errors: FormikErrorType = {};
             if (!values.email) {
                 errors.email = 'Required';
-            } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
+            } else if (!/^[A-Z\d._%+-]+@[A-Z\d.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
                 errors.email = 'Invalid email address';
             }
             if (!values.password) {

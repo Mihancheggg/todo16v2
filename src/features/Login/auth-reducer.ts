@@ -1,35 +1,40 @@
-import {Dispatch} from 'redux'
-import {
-    AppActionsType,
-    SetAppErrorActionType,
-    setAppStatusAC,
-    SetAppStatusActionType,
-    setIsInitializedAC
-} from '../../app/app-reducer'
-import {authAPI, LoginParamsType} from '../../api/todolists-api';
-import {handleServerAppError, handleServerNetworkError} from '../../utils/error-utils';
-import {addTaskAC} from '../TodolistsList/tasks-reducer';
-import {clearDataAC, TodolistsActionsType} from '../TodolistsList/todolists-reducer';
+import { Dispatch } from 'redux'
+import { setAppStatusAC } from '../../app/app-reducer'
+import { authAPI } from '../../api/todolists-api';
+import { handleServerAppError, handleServerNetworkError } from '../../utils/error-utils';
+import { clearDataAC } from '../TodolistsList/todolists-reducer';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 const initialState = {
     isLoggedIn: false
 }
-type InitialStateType = typeof initialState
 
-export const authReducer = (state: InitialStateType = initialState, action: AuthActionsType): InitialStateType => {
+const slice = createSlice({
+    name: 'auth',
+    initialState: initialState,
+    reducers: {
+        setIsLoggedInAC(state, action: PayloadAction<boolean>) {
+            state.isLoggedIn = action.payload
+        },
+    }
+})
+
+export const {setIsLoggedInAC} = slice.actions
+
+export const authReducer = slice.reducer/*(state: InitialStateType = initialState, action: AuthActionsType): InitialStateType => {
     switch (action.type) {
         case 'login/SET-IS-LOGGED-IN':
             return {...state, isLoggedIn: action.value}
         default:
             return state
     }
-}
+}*/
 // actions
-export const setIsLoggedInAC = (value: boolean) =>
-    ({type: 'login/SET-IS-LOGGED-IN', value} as const)
+/*export const setIsLoggedInAC = (value: boolean) =>
+    ({type: 'login/SET-IS-LOGGED-IN', value} as const)*/
 
 // thunks
-export const loginTC = (email: string, password: string, rememberMe?: boolean, captcha?: boolean) => (dispatch: Dispatch<AuthActionsType| SetAppErrorActionType | SetAppStatusActionType>) => {
+export const loginTC = (email: string, password: string, rememberMe?: boolean, captcha?: boolean) => (dispatch: Dispatch) => {
     dispatch(setAppStatusAC('loading'))
     authAPI.login(email, password, rememberMe, captcha)
         .then(res => {
@@ -45,7 +50,7 @@ export const loginTC = (email: string, password: string, rememberMe?: boolean, c
         })
 }
 
-export const logoutTC = () => (dispatch: Dispatch<AuthActionsType | AppActionsType>) => {
+export const logoutTC = () => (dispatch: Dispatch) => {
     dispatch(setAppStatusAC('loading'))
     authAPI.logout()
         .then(res => {
@@ -62,7 +67,3 @@ export const logoutTC = () => (dispatch: Dispatch<AuthActionsType | AppActionsTy
             handleServerNetworkError(error, dispatch)
         })
 }
-
-
-// types
-export type AuthActionsType = ReturnType<typeof setIsLoggedInAC> | SetAppStatusActionType | SetAppErrorActionType | TodolistsActionsType
