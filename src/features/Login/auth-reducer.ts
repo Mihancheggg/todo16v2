@@ -13,8 +13,8 @@ const slice = createSlice({
     name: 'auth',
     initialState: initialState,
     reducers: {
-        setIsLoggedInAC(state, action: PayloadAction<boolean>) {
-            state.isLoggedIn = action.payload
+        setIsLoggedInAC(state, action: PayloadAction<{ value: boolean }>) {
+            state.isLoggedIn = action.payload.value
         },
     }
 })
@@ -35,12 +35,12 @@ export const authReducer = slice.reducer/*(state: InitialStateType = initialStat
 
 // thunks
 export const loginTC = (email: string, password: string, rememberMe?: boolean, captcha?: boolean) => (dispatch: Dispatch) => {
-    dispatch(setAppStatusAC('loading'))
+    dispatch(setAppStatusAC({status: 'loading'}))
     authAPI.login(email, password, rememberMe, captcha)
         .then(res => {
             if (res.data.resultCode === 0) {
-                dispatch(setIsLoggedInAC(true))
-                dispatch(setAppStatusAC('succeeded'))
+                dispatch(setIsLoggedInAC({value: true}))
+                dispatch(setAppStatusAC({status: 'succeeded'}))
             } else {
                 handleServerAppError(res.data, dispatch);
             }
@@ -51,13 +51,13 @@ export const loginTC = (email: string, password: string, rememberMe?: boolean, c
 }
 
 export const logoutTC = () => (dispatch: Dispatch) => {
-    dispatch(setAppStatusAC('loading'))
+    dispatch(setAppStatusAC({status: 'loading'}))
     authAPI.logout()
         .then(res => {
             if (res.data.resultCode === 0) {
-                dispatch(setIsLoggedInAC(false))
+                dispatch(setIsLoggedInAC({value: false}))
                 dispatch(clearDataAC())
-                dispatch(setAppStatusAC('succeeded'))
+                dispatch(setAppStatusAC({status: 'succeeded'}))
                 /*dispatch(setIsInitializedAC())*/
             } else {
                 handleServerAppError(res.data, dispatch)
