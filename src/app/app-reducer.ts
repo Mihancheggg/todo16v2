@@ -19,8 +19,8 @@ const slice = createSlice({
         setAppStatusAC(state, action: PayloadAction<{ status: RequestStatusType }>) {
             state.status = action.payload.status
         },
-        setIsInitializedAC(state, action: PayloadAction) {
-            state.isInitialized = true
+        setIsInitializedAC(state, action: PayloadAction<{isInitialized: boolean}>) {
+            state.isInitialized = action.payload.isInitialized
         },
     }
 })
@@ -28,7 +28,8 @@ const slice = createSlice({
 export const {setAppErrorAC, setAppStatusAC, setIsInitializedAC} = slice.actions
 
 //reducer
-export const appReducer = slice.reducer/*(state: InitialStateType = initialState, action: AppActionsType): InitialStateType => {
+export const appReducer = slice.reducer
+/*(state: InitialStateType = initialState, action: AppActionsType): InitialStateType => {
     switch (action.type) {
         case 'APP/SET-STATUS':
             return {...state, status: action.status}
@@ -41,6 +42,7 @@ export const appReducer = slice.reducer/*(state: InitialStateType = initialState
     }
 }*/
 
+//types
 export type RequestStatusType = 'idle' | 'loading' | 'succeeded' | 'failed'
 export type InitialStateType = {
     // происходит ли сейчас взаимодействие с сервером
@@ -51,20 +53,11 @@ export type InitialStateType = {
     isInitialized: boolean
 }
 
-//types
-// export type AppActionsType =
-//     | SetAppErrorActionType
-//     | SetAppStatusActionType
-//     | SetInitializingStatusActionType
-//
-// export type SetAppErrorActionType = ReturnType<typeof setAppErrorAC>
-// export type SetAppStatusActionType = ReturnType<typeof setAppStatusAC>
-// export type SetInitializingStatusActionType = ReturnType<typeof setIsInitializedAC>
 
 //action creators
 // export const setAppErrorAC = (error: string | null) => ({type: 'APP/SET-ERROR', error} as const)
 // export const setAppStatusAC = (status: RequestStatusType) => ({type: 'APP/SET-STATUS', status} as const)
-// export const setIsInitializedAC = () => ({type: 'APP/SET-INITIALIZED'} as const)
+// export const setIsInitializedAC = (value: boolean) => ({type: 'APP/SET-INITIALIZED', value} as const)
 
 //thunk creators
 export const initializeAppTC = () => (dispatch: Dispatch) => {
@@ -74,7 +67,7 @@ export const initializeAppTC = () => (dispatch: Dispatch) => {
         } else {
             dispatch(setAppErrorAC({error: res.data.messages[0]}))
         }
-        dispatch(setIsInitializedAC())
+        dispatch(setIsInitializedAC({isInitialized: true}))
     })
 }
 
