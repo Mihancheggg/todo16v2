@@ -1,4 +1,4 @@
-import { addTaskAC, removeTaskAC, tasksReducer, TasksStateType, updateTaskAC } from './tasks-reducer';
+import { addTaskAC, fetchTasksTC, removeTaskAC, tasksReducer, TasksStateType, updateTaskAC } from './tasks-reducer';
 import { TaskPriorities, TaskStatuses } from '../../api/todolists-api';
 import { addTodolistAC, removeTodolistAC, setTodolistsAC } from './todolists-reducer';
 
@@ -110,5 +110,25 @@ test('empty array should be added when we set todolists', () => {
             {id: '1', title: 'title 1', order: 0, addedDate: ''},
             {id: '2', title: 'title 2', order: 0, addedDate: ''}
         ]
-    })
+    });
+
+    const endState = tasksReducer({}, action);
+
+    const keys = Object.keys(endState);
+
+    expect(keys.length).toBe(2);
+    expect(endState['1']).toBeDefined();
+    expect(endState['2']).toBeDefined();
+});
+
+test('tasks should be added for todolist', () => {
+    const action = fetchTasksTC.fulfilled({
+        tasks: startState['todolistId1'],
+        todolistId: 'todolistId1'
+    }, '', 'todolistId1')
+
+    const endState = tasksReducer({'todolistId1': [], 'todolistId2': []}, action)
+
+    expect(endState['todolistId1'].length).toBe(3);
+    expect(endState['todolistId2'].length).toBe(0);
 })
