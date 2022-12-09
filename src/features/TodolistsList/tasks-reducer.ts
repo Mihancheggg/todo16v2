@@ -26,17 +26,24 @@ export const fetchTasksTC = createAsyncThunk('tasks/fetchTasks', (todolistId: st
         })
 })
 
+export const removeTaskTC = createAsyncThunk('tasks/removeTask', (param: { taskId: string, todolistId: string }, thunkAPI) => {
+    return todolistsAPI.deleteTask(param.todolistId, param.taskId)
+        .then(res => {
+            return ({taskId: param.taskId, todolistId: param.todolistId})
+        })
+})
+
 const slice = createSlice({
     name: 'tasks',
     initialState,
     reducers: {
-        removeTaskAC(state, action: PayloadAction<{ taskId: string, todolistId: string }>) {
+        /*removeTaskAC(state, action: PayloadAction<{ taskId: string, todolistId: string }>) {
             const todolist = state[action.payload.todolistId];
             const index = todolist.findIndex(t => t.id === action.payload.taskId)
             if (index > -1) {
                 todolist.splice(index, 1)
             }
-        },
+        },*/
         addTaskAC(state, action: PayloadAction<{ task: TaskType }>) {
             state[action.payload.task.todoListId].unshift(action.payload.task)
         },
@@ -63,11 +70,18 @@ const slice = createSlice({
         });
         builder.addCase(fetchTasksTC.fulfilled, (state, action) => {
             state[action.payload.todolistId] = action.payload.tasks
+        });
+        builder.addCase(removeTaskTC.fulfilled, (state, action) => {
+            const todolist = state[action.payload.todolistId];
+            const index = todolist.findIndex(t => t.id === action.payload.taskId)
+            if (index > -1) {
+                todolist.splice(index, 1)
+            }
         })
     }
 })
 
-export const {removeTaskAC, addTaskAC, updateTaskAC, /*setTasksAC*/} = slice.actions
+export const {addTaskAC, updateTaskAC} = slice.actions
 
 export const tasksReducer = slice.reducer/*(state: TasksStateType = initialState, action: any): TasksStateType => {
     switch (action.type) {
@@ -102,13 +116,13 @@ export const tasksReducer = slice.reducer/*(state: TasksStateType = initialState
             dispatch(setAppStatusAC({status: 'succeeded'}))
         })
 }*/
-export const removeTaskTC = (taskId: string, todolistId: string) => (dispatch: Dispatch) => {
+/*export const removeTaskTC_ = (taskId: string, todolistId: string) => (dispatch: Dispatch) => {
     todolistsAPI.deleteTask(todolistId, taskId)
         .then(res => {
             const action = removeTaskAC({taskId, todolistId})
             dispatch(action)
         })
-}
+}*/
 export const addTaskTC = (title: string, todolistId: string) => (dispatch: Dispatch) => {
     dispatch(setAppStatusAC({status: 'loading'}))
     todolistsAPI.createTask(todolistId, title)
