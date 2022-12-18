@@ -15,12 +15,17 @@ export const AddItemForm = React.memo(function ({addItem, disabled = false}: Add
     let [error, setError] = useState<string | null>(null)
 
     const addItemHandler = () => {
-        if (title.trim() !== '') {
-            addItem(title);
-            setTitle('');
+        if(title.trim().length < 100){
+            if (title.trim() !== '') {
+                addItem(title);
+                setTitle('');
+            } else {
+                setError('Title is required');
+            }
         } else {
-            setError('Title is required');
+            setError('Title length must be less than 100 symbols');
         }
+
     }
 
     const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {

@@ -40,13 +40,8 @@ export const authAPI = {
     me() {
         return instance.get<ResponseType<GetMeResponse>>(`auth/me`)
     },
-    login(email: string, password: string, rememberMe?: boolean, captcha?: boolean) {
-        return instance.post<LoginParamsType, AxiosResponse<ResponseType<LoginResponse>>>('auth/login', {
-            email,
-            password,
-            rememberMe,
-            captcha
-        })
+    login(data: LoginParamsType) {
+        return instance.post<LoginParamsType, AxiosResponse<ResponseType<LoginResponse>>>('auth/login', data)
     },
     logout(){
         return instance.delete<ResponseType>(`auth/login`)
@@ -63,7 +58,7 @@ export type TodolistType = {
 export type ResponseType<D = {}> = {
     resultCode: number
     messages: Array<string>
-    fieldsErrors: Array<string>
+    fieldsErrors: Array<{field: string, error: string}>
     data: D
 }
 
