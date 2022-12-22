@@ -1,13 +1,25 @@
-import { setIsLoggedInAC } from '../features/Login/auth-reducer';
 import { authAPI } from '../api/todolists-api';
-import { Dispatch } from 'redux';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 const initialState: InitialStateType = {
     status: 'idle',
     error: null,
     isInitialized: false
 }
+
+export const initializeAppTC = createAsyncThunk('app/initializeApp', async (arg, thunkAPI) => {
+    try {
+        const res = await authAPI.me()
+        if (res.data.resultCode === 0) {
+            //thunkAPI.dispatch(setIsLoggedInAC({value: true}));
+            return {isLoggedIn: true}
+        } else {
+            thunkAPI.dispatch(setAppErrorAC({error: res.data.messages[0]}))
+        }
+    } catch (error) {
+
+    }
+})
 
 const slice = createSlice({
     name: 'app',
@@ -19,13 +31,18 @@ const slice = createSlice({
         setAppStatusAC(state, action: PayloadAction<{ status: RequestStatusType }>) {
             state.status = action.payload.status
         },
-        setIsInitializedAC(state, action: PayloadAction<{isInitialized: boolean}>) {
+        setIsInitializedAC(state, action: PayloadAction<{ isInitialized: boolean }>) {
             state.isInitialized = action.payload.isInitialized
         },
+    },
+    extraReducers: (builder) => {
+        builder.addCase(initializeAppTC.fulfilled, (state, action) => {
+            state.isInitialized = true
+        })
     }
 })
 
-export const {setAppErrorAC, setAppStatusAC, setIsInitializedAC} = slice.actions
+export const {setAppErrorAC, setAppStatusAC} = slice.actions
 
 //reducer
 export const appReducer = slice.reducer
@@ -60,7 +77,7 @@ export type InitialStateType = {
 // export const setIsInitializedAC = (value: boolean) => ({type: 'APP/SET-INITIALIZED', value} as const)
 
 //thunk creators
-export const initializeAppTC = () => (dispatch: Dispatch) => {
+/*export const initializeAppTC = () => (dispatch: Dispatch) => {
     authAPI.me().then(res => {
         if (res.data.resultCode === 0) {
             dispatch(setIsLoggedInAC({value: true}));
@@ -69,7 +86,7 @@ export const initializeAppTC = () => (dispatch: Dispatch) => {
         }
         dispatch(setIsInitializedAC({isInitialized: true}))
     })
-}
+}*/
 
 
 
