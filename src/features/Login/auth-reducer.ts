@@ -1,9 +1,8 @@
-import { Dispatch } from 'redux'
 import { setAppStatusAC } from '../../app/app-reducer'
 import { authAPI, LoginParamsType } from '../../api/todolists-api';
 import { handleServerAppError, handleServerNetworkError } from '../../utils/error-utils';
 import { clearDataAC } from '../TodolistsList/todolists-reducer';
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 
 const initialState = {
